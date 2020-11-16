@@ -2,6 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QImage>
+#include <QColorDialog>
+#include <QFileDialog>
+#include <QResizeEvent>
+#include <qdebug.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,7 +20,33 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_setBcgBut_clicked();
+    void on_loadBut_clicked();
+
+    void resizeEvent(QResizeEvent*) override;
+    void on_setX_valueChanged(int);
+    void on_setY_valueChanged(int);
+    void on_setR_valueChanged(int);
+    void on_setG_valueChanged(int);
+    void on_setB_valueChanged(int);
+
 private:
+    void resetBcg();
+    void showBcg(QSize);
+
+    QImage getImage();
+    void setImage(QImage&);
+
+    void updateColor();
+    void updateCoordsSets();
+    void updatePixel();
+
     Ui::MainWindow *ui;
+    QImage * m_image = nullptr;
+    bool m_imageIsSet = false;
+    QPoint m_coords;
+    QColor m_color;
+
 };
 #endif // MAINWINDOW_H
