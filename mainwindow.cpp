@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     QSize dims(this->size());
     QResizeEvent *event = new QResizeEvent(dims,dims);
     QApplication::postEvent(this,event);
+
+    setupColors();
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -126,9 +128,22 @@ void MainWindow::updateColor()
 
 void MainWindow::updateCoordsSets()
 {
-    QSize dims = ui->image->size();
-    ui->setX->setMaximum(dims.width());
-    ui->setY->setMaximum(dims.height());
+    static bool doUpdate = false;
+    if(doUpdate)
+    {
+        QSize dims = ui->image->size();
+        ui->setX->setMaximum(dims.width());
+        ui->setY->setMaximum(dims.height());
+
+
+        ui->setBegX->setMaximum(dims.width());
+        ui->setBegY->setMaximum(dims.height());
+        ui->setEndX->setMaximum(dims.width());
+        ui->setEndY->setMaximum(dims.height());
+        ui->setEndX->setValue(dims.width());
+        ui->setEndY->setValue(dims.height());
+    }
+    else doUpdate = true;
 }
 
 void MainWindow::updatePixel()
@@ -139,4 +154,44 @@ void MainWindow::updatePixel()
         img.setPixelColor(m_coords,m_color);
         setImage(img);
     }
+}
+
+void MainWindow::setupColors()
+{
+    QStringList colors = {"black","red","green",
+                          "blue","white","cyan",
+                          "orange","olive","gold"};
+    ui->colorBox->addItems(colors);
+}
+
+
+
+void MainWindow::on_drawBut_clicked()
+{
+    if(m_imageIsSet)
+    {
+        m_backgroundBackup = *(ui->image->pixmap());
+        QPixmap curBackground = m_backgroundBackup;
+        ui->remBut->setEnabled(true);
+        ui->drawBut->setEnabled(false);
+
+
+        QPainter painter(&curBackground);
+        double width = static_cast<double>(ui->setWidth->value());
+        QString colorName = ui->colorBox->currentText();
+        painter.setPen({QColor(colorName),width});
+
+
+        QPoint begin(ui->setBegX->value(),ui->setBegY->value());
+        QPoint end(ui->setEndX->value(),ui->setEndY->value());
+        painter.drawLine(begin,end);
+        ui->image->setPixmap(curBackground);
+    }
+}
+
+void MainWindow::on_remBut_clicked()
+{
+    ui->remBut->setEnabled(false);
+    ui->drawBut->setEnabled(true);
+    ui->image->setPixmap(m_backgroundBackup);
 }

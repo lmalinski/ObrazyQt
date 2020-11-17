@@ -6,6 +6,7 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QResizeEvent>
+#include <QPainter>
 #include <qdebug.h>
 
 QT_BEGIN_NAMESPACE
@@ -31,6 +32,9 @@ private slots:
     void on_setG_valueChanged(int);
     void on_setB_valueChanged(int);
 
+    void on_drawBut_clicked();
+    void on_remBut_clicked();
+
 private:
     void resetBcg();
     void showBcg(QSize);
@@ -41,12 +45,14 @@ private:
     void updateColor();
     void updateCoordsSets();
     void updatePixel();
+    void setupColors();
 
     Ui::MainWindow *ui;
     QImage * m_image = nullptr;
     bool m_imageIsSet = false;
     QPoint m_coords;
     QColor m_color;
+    QPixmap m_backgroundBackup;
 
 };
 #endif // MAINWINDOW_H
