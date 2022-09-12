@@ -44,7 +44,6 @@ void MainWindow::showBcg(QSize dims)
         QImage img = m_image->scaled(dims);
         ui->image->setPixmap(QPixmap::fromImage(img));
         m_color = QColor(img.pixelColor(m_coords));
-        m_imageIsSet = true;
         updateColor();
     }
 }
@@ -76,8 +75,8 @@ void MainWindow::on_loadBut_clicked()
 
 QImage MainWindow::getImage()
 {
-    const QPixmap *map = ui->image->pixmap();
-    return map->toImage();
+    const QPixmap map = ui->image->pixmap(Qt::ReturnByValueConstant());
+    return map.toImage();
 }
 void MainWindow::setImage(QImage& img)
 {
@@ -116,7 +115,7 @@ void MainWindow::on_setB_valueChanged(int blue)
 
 void MainWindow::updateColor()
 {
-    if(m_imageIsSet)
+    if(ui->image->isFilled())
     {
         QImage img = getImage();
         QColor color = img.pixelColor(m_coords);
@@ -148,7 +147,7 @@ void MainWindow::updateCoordsSets()
 
 void MainWindow::updatePixel()
 {
-    if(m_imageIsSet)
+    if(ui->image->isFilled())
     {
         QImage img = getImage();
         img.setPixelColor(m_coords,m_color);
@@ -164,13 +163,11 @@ void MainWindow::setupColors()
     ui->colorBox->addItems(colors);
 }
 
-
-
 void MainWindow::on_drawBut_clicked()
 {
-    if(m_imageIsSet)
+    if(ui->image->isFilled())
     {
-        m_backgroundBackup = *(ui->image->pixmap());
+        m_backgroundBackup = ui->image->pixmap(Qt::ReturnByValueConstant());
         QPixmap curBackground = m_backgroundBackup;
         ui->remBut->setEnabled(true);
         ui->drawBut->setEnabled(false);
@@ -194,4 +191,28 @@ void MainWindow::on_remBut_clicked()
     ui->remBut->setEnabled(false);
     ui->drawBut->setEnabled(true);
     ui->image->setPixmap(m_backgroundBackup);
+}
+
+void MainWindow::on_checkBox_stateChanged(int state)
+{
+    ui->image->setDrawing(state);
+}
+
+void MainWindow::on_setWidthMan_valueChanged(double value)
+{
+    ui->image->setPenWidth(value);
+}
+
+void MainWindow::on_colorEdit_editingFinished()
+{
+    QString colorCode = ui->colorEdit->text();
+    QColor color(colorCode);
+    if(!color.isValid())
+    {
+        QMessageBox msg;
+        msg.setIcon(QMessageBox::Critical);
+        msg.setText("Invalid color Code!");
+        msg.exec();
+    }
+    else ui->image->setColor(color);
 }

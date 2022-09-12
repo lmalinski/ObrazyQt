@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QResizeEvent>
 #include <QPainter>
+#include <QMessageBox>
 #include <qdebug.h>
 
 QT_BEGIN_NAMESPACE
@@ -34,6 +35,9 @@ private slots:
 
     void on_drawBut_clicked();
     void on_remBut_clicked();
+    void on_checkBox_stateChanged(int);
+    void on_setWidthMan_valueChanged(double);
+    void on_colorEdit_editingFinished();
 
 private:
     void resetBcg();
@@ -49,7 +53,6 @@ private:
 
     Ui::MainWindow *ui;
     QImage * m_image = nullptr;
-    bool m_imageIsSet = false;
     QPoint m_coords;
     QColor m_color;
     QPixmap m_backgroundBackup;
